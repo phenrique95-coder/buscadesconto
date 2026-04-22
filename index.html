@@ -1,0 +1,736 @@
+  <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuscaDesconto – Melhores Preços do Mercado Livre</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --laranja: #FF6B00;
+    --laranja2: #FF9A00;
+    --dark: #0f0f0f;
+    --dark2: #1a1a1a;
+    --dark3: #242424;
+    --card: #1e1e1e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #00e676;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid #2a2a2a;
+    position: relative;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, var(--laranja), var(--laranja2));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    background: linear-gradient(90deg, var(--laranja), var(--laranja2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    background: #2a2a2a;
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid #333;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 80px 20px 50px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(255,107,0,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--laranja), var(--laranja2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 500px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+  }
+
+  /* Search box */
+  .search-container {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .search-box {
+    display: flex;
+    background: var(--dark2);
+    border: 1.5px solid #333;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--laranja);
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.12);
+  }
+
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 18px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .search-box input::placeholder { color: var(--muted); }
+
+  .search-btn {
+    background: linear-gradient(135deg, var(--laranja), var(--laranja2));
+    border: none;
+    padding: 0 28px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    transition: opacity 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-btn:hover { opacity: 0.9; }
+  .search-btn:active { transform: scale(0.98); }
+
+  /* Config panel */
+  .config-panel {
+    max-width: 680px;
+    margin: 16px auto 0;
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .config-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .config-toggle:hover { color: var(--text); }
+
+  .config-body {
+    display: none;
+    padding: 0 20px 20px;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .config-body.open { display: flex; }
+
+  .config-body label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .config-body input {
+    width: 100%;
+    background: var(--dark3);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .config-body input:focus { border-color: var(--laranja); }
+
+  .config-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    line-height: 1.5;
+  }
+
+  /* Stats bar */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 30px 20px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--laranja);
+  }
+  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  /* Results */
+  .results-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .results-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .results-count {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .sort-select {
+    background: var(--dark2);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.4s ease both;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--laranja);
+    box-shadow: 0 8px 30px rgba(255,107,0,0.12);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #252525;
+    padding: 16px;
+  }
+
+  .card-body { padding: 16px; }
+
+  .card-title {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-price-area { margin-bottom: 14px; }
+
+  .card-original {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-bottom: 2px;
+  }
+
+  .card-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .card-discount {
+    display: inline-block;
+    background: rgba(0,230,118,0.12);
+    color: var(--green);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+
+  .card-shipping {
+    font-size: 0.75rem;
+    color: var(--green);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--laranja), var(--laranja2));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 11px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .card-btn:hover { opacity: 0.88; }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .loading.show { display: block; }
+
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid #2a2a2a;
+    border-top-color: var(--laranja);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading p { color: var(--muted); font-size: 0.9rem; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    display: none;
+  }
+  .empty.show { display: block; }
+  .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+  .empty h3 { font-family: 'Syne', sans-serif; color: var(--text); margin-bottom: 8px; }
+
+  /* Error */
+  .error-box {
+    background: rgba(255,60,60,0.08);
+    border: 1px solid rgba(255,60,60,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #ff6b6b;
+    font-size: 0.88rem;
+    margin-bottom: 24px;
+    display: none;
+  }
+  .error-box.show { display: block; }
+
+  /* Initial state */
+  .initial-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .initial-state .big-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
+  .initial-state p { font-size: 0.95rem; line-height: 1.6; }
+
+  /* Trending tags */
+  .trending {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .tag {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tag:hover {
+    border-color: var(--laranja);
+    color: var(--laranja);
+  }
+
+  footer {
+    border-top: 1px solid #1e1e1e;
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .hero { padding: 50px 20px 30px; }
+    .stats { gap: 20px; }
+    .search-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔍</div>
+    <span class="logo-text">BuscaDesconto</span>
+  </div>
+  <span class="badge">Mercado Livre</span>
+</header>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <h1>Encontre os <span>melhores preços</span><br>do Mercado Livre</h1>
+  <p>Digite o produto que você quer e encontramos as melhores ofertas com desconto para você.</p>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Ex: iPhone 15, Smart TV 55, Tênis Nike..." autocomplete="off" />
+      <button class="search-btn" onclick="buscar()">
+        <span>Buscar</span> 🔍
+      </button>
+    </div>
+
+    <div style="margin-top:12px; border-radius:12px; padding:10px 16px; background:#1a1a1a; border:1px solid #2a2a2a; font-size:0.78rem; color:#888; text-align:left;">
+      🔍 Busca em tempo real direto do Mercado Livre
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">+1M</div>
+    <div class="stat-label">Produtos</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">Grátis</div>
+    <div class="stat-label">Para usar</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">Real</div>
+    <div class="stat-label">Tempo real</div>
+  </div>
+</div>
+
+<section class="results-section">
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Buscando melhores ofertas...</p>
+  </div>
+
+  <div class="initial-state" id="initialState">
+    <div class="big-icon">🛍️</div>
+    <p>Digite o produto acima para encontrar<br>as melhores ofertas do Mercado Livre</p>
+    <div class="trending">
+      <span class="tag" onclick="buscarTag('iPhone 15')">📱 iPhone 15</span>
+      <span class="tag" onclick="buscarTag('Smart TV')">📺 Smart TV</span>
+      <span class="tag" onclick="buscarTag('Notebook')">💻 Notebook</span>
+      <span class="tag" onclick="buscarTag('Airfryer')">🍳 Airfryer</span>
+      <span class="tag" onclick="buscarTag('Tênis Nike')">👟 Tênis Nike</span>
+      <span class="tag" onclick="buscarTag('PS5')">🎮 PS5</span>
+    </div>
+  </div>
+
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">😕</div>
+    <h3>Nenhum resultado encontrado</h3>
+    <p>Tente buscar por outro produto</p>
+  </div>
+
+  <div id="resultsHeader" style="display:none">
+    <div class="results-header">
+      <div>
+        <div class="results-title" id="resultsTitle"></div>
+        <div class="results-count" id="resultsCount"></div>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="reordenar()">
+        <option value="discount">Maior desconto</option>
+        <option value="price_asc">Menor preço</option>
+        <option value="price_desc">Maior preço</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<footer>
+  BuscaDesconto &copy; 2026 — Preços e disponibilidade em tempo real via Mercado Livre
+</footer>
+
+<script>
+  let allProducts = [];
+
+  function toggleConfig() {}
+
+  window.onload = () => {
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') buscar();
+    });
+  };
+
+  function buscarTag(tag) {
+    document.getElementById('searchInput').value = tag;
+    buscar();
+  }
+
+  async function buscar() {
+    const query = document.getElementById('searchInput').value.trim();
+
+    if (!query) {
+      showError('Digite o nome de um produto para buscar.');
+      return;
+    }
+
+    hideError();
+    showLoading(true);
+    hideInitial();
+    document.getElementById('resultsHeader').style.display = 'none';
+    document.getElementById('cardsGrid').innerHTML = '';
+    document.getElementById('emptyState').classList.remove('show');
+
+    try {
+      const mlUrl = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(query)}&limit=48`;
+      const url = `https://corsproxy.io/?${encodeURIComponent(mlUrl)}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Erro ao buscar produtos');
+      const data = await response.json();
+
+      allProducts = (data.results || []).filter(p => p.original_price && p.original_price > p.price);
+
+      if (allProducts.length === 0) {
+        // Show all products if none have discount
+        allProducts = data.results || [];
+      }
+
+      showLoading(false);
+
+      if (allProducts.length === 0) {
+        document.getElementById('emptyState').classList.add('show');
+        return;
+      }
+
+      document.getElementById('resultsTitle').textContent = `Resultados para "${query}"`;
+      document.getElementById('resultsCount').textContent = `${allProducts.length} ofertas encontradas`;
+      document.getElementById('resultsHeader').style.display = 'block';
+
+      reordenar();
+
+    } catch(e) {
+      showLoading(false);
+      showError('Erro ao buscar produtos. Verifique sua conexão e tente novamente.');
+      console.error(e);
+    }
+  }
+
+  function reordenar() {
+    const sort = document.getElementById('sortSelect').value;
+    let sorted = [...allProducts];
+
+    if (sort === 'discount') {
+      sorted.sort((a, b) => {
+        const discA = a.original_price ? (a.original_price - a.price) / a.original_price : 0;
+        const discB = b.original_price ? (b.original_price - b.price) / b.original_price : 0;
+        return discB - discA;
+      });
+    } else if (sort === 'price_asc') {
+      sorted.sort((a, b) => a.price - b.price);
+    } else {
+      sorted.sort((a, b) => b.price - a.price);
+    }
+
+    renderCards(sorted);
+  }
+
+  function renderCards(products) {
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+
+    products.forEach((p, i) => {
+      const discount = p.original_price
+        ? Math.round((1 - p.price / p.original_price) * 100)
+        : 0;
+
+      const freeShipping = p.shipping?.free_shipping;
+      const img = p.thumbnail?.replace('http://', 'https://').replace('-I.jpg', '-O.jpg') || '';
+
+      // Affiliate link with your publisher ID (add yours here)
+      const affiliateLink = `${p.permalink}?matt_tool=YOUR_PUBLISHER_ID`;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = `${i * 0.05}s`;
+      card.innerHTML = `
+        <img class="card-img" src="${img}" alt="${p.title}" onerror="this.src='https://http2.mlstatic.com/frontend-assets/vpp-frontend/1.0.2/images/placeholder.png'">
+        <div class="card-body">
+          <div class="card-title">${p.title}</div>
+          <div class="card-price-area">
+            ${p.original_price ? `<div class="card-original">R$ ${p.original_price.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>` : ''}
+            <div>
+              <span class="card-price">R$ ${p.price.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+              ${discount > 0 ? `<span class="card-discount">-${discount}%</span>` : ''}
+            </div>
+          </div>
+          ${freeShipping ? `<div class="card-shipping">✓ Frete grátis</div>` : ''}
+          <a href="${p.permalink}" target="_blank" class="card-btn">Ver oferta →</a>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function showLoading(show) {
+    document.getElementById('loading').classList.toggle('show', show);
+  }
+
+  function hideInitial() {
+    document.getElementById('initialState').style.display = 'none';
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = '⚠️ ' + msg;
+    box.classList.add('show');
+  }
+
+  function hideError() {
+    document.getElementById('errorBox').classList.remove('show');
+  }
+</script>
+</body>
+</html>
