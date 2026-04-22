@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -626,10 +626,11 @@
 
     try {
       const mlUrl = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(query)}&limit=48`;
-      const url = `https://corsproxy.io/?${encodeURIComponent(mlUrl)}`;
+      const url = `https://api.allorigins.win/get?url=${encodeURIComponent(mlUrl)}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error('Erro ao buscar produtos');
-      const data = await response.json();
+      const raw = await response.json();
+      const data = JSON.parse(raw.contents);
 
       allProducts = (data.results || []).filter(p => p.original_price && p.original_price > p.price);
 
